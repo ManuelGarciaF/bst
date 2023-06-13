@@ -11,6 +11,17 @@ class TreeNode {
         this.left = left;
         this.right = right;
     }
+
+    height(): number {
+        // If it's a leaf node
+        if (this.left === null && this.right === null) return 0;
+
+        // -1 to indicate that the node does not exist.
+        let leftHeight = (this.left !== null) ? this.left.height() : -1;
+        let rightHeight = (this.right !== null) ? this.right.height() : -1;
+
+        return ((leftHeight > rightHeight) ? leftHeight : rightHeight) + 1;
+    };
 }
 
 // TreeNode factory function.
@@ -180,12 +191,21 @@ class Tree {
         orderedElems.forEach(fn);
     };
 
-    height(node: TreeNode): number {
-        return 0;
-    };
 
-    depth(node: TreeNode): number {
-        return 0;
+    depth(target: TreeNode): number {
+        let count = 0;
+        let currNode = this.root;
+
+        while (currNode !== null) {
+            if (currNode.data === target.data) {
+                return count;
+            }
+            currNode = (target.data > currNode.data) ? currNode.right : currNode.left;
+            ++count;
+        }
+
+        // Not found
+        return -1;
     };
 }
 
