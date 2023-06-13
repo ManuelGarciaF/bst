@@ -1,49 +1,42 @@
 // BST Exercise for The Odin Project
 
-interface TreeNode {
+
+class TreeNode {
     data: number;
     left: TreeNode | null;
     right: TreeNode | null;
+
+    constructor(data: number, left: TreeNode | null, right: TreeNode | null) {
+        this.data = data;
+        this.left = left;
+        this.right = right;
+    }
 }
 
 // TreeNode factory function.
-function createTreeNode(data: number, left: TreeNode | null, right: TreeNode | null): TreeNode {
-    const node: TreeNode = Object.create({});
-    node.data = data;
-    node.left = left;
-    node.right = right;
-    return node;
-}
 
-interface Tree {
+class Tree {
     root: TreeNode | null;
-    insert(elem: number): void;
-    delete(elem: number): void;
-    find(elem: number): TreeNode | null;
-    levelOrder(fn?: (n: number) => any): void | number[],
-    inorder(fn?: (n: number) => any): void | number[],
-    preorder(fn?: (n: number) => any): void | number[],
-    postorder(fn?: (n: number) => any): void | number[],
-    height(node: TreeNode): number,
-    depth(node: TreeNode): number,
-}
 
-const treePrototype = {
+    // Tree factory function.
+    constructor(data: number[]) {
+        this.root = buildBalancedTree(data);
+    }
 
     insert(elem: number): void {
         if (this.root === null) {
-            this.root = createTreeNode(elem, null, null);
+            this.root = new TreeNode(elem, null, null);
             return;
         }
 
-        let currNode = this.root;
-        let prevNode = currNode;
+        let currNode: TreeNode | null = this.root;
+        let prevNode: TreeNode | null = currNode;
         while (currNode !== null) {
             prevNode = currNode;
             currNode = (elem < currNode.data) ? currNode.left : currNode.right;
         }
-        prevNode[elem < prevNode.data ? "left" : "right"] = createTreeNode(elem, null, null);
-    },
+        prevNode[elem < prevNode.data ? "left" : "right"] = new TreeNode(elem, null, null);
+    };
 
     delete(elem: number) {
         let elemNode = this.root;
@@ -97,7 +90,7 @@ const treePrototype = {
 
         // Change elemNode for succ.
         elemNode.data = succ.data;
-    },
+    };
 
     find(elem: number): TreeNode | null {
         let currNode = this.root;
@@ -105,9 +98,12 @@ const treePrototype = {
             currNode = (elem < currNode.data) ? currNode.left : currNode.right;
         }
         return currNode;
-    },
+    };
 
     levelOrder(fn?: (n: number) => any): void | number[] {
+        if (this.root === null && typeof fn === undefined) return [];
+        if (this.root === null) return;
+
         const queue: TreeNode[] = [this.root];
         const orderedElems: number[] = [];
 
@@ -125,7 +121,7 @@ const treePrototype = {
             return orderedElems;
         }
         orderedElems.forEach(fn);
-    },
+    };
 
     inorder(fn?: (n: number) => any): void | number[] {
         function nodeInorder(root: TreeNode): number[] {
@@ -134,13 +130,16 @@ const treePrototype = {
             return leftInorder.concat([root.data]).concat(rightInorder);
         }
 
+        if (this.root === null && typeof fn === undefined) return [];
+        if (this.root === null) return;
+
         const orderedElems: number[] = nodeInorder(this.root);
 
         if (typeof fn === "undefined") {
             return orderedElems;
         }
         orderedElems.forEach(fn);
-    },
+    };
 
     preorder(fn?: (n: number) => any): void | number[] {
         function nodePreorder(root: TreeNode): number[] {
@@ -149,13 +148,16 @@ const treePrototype = {
             return [root.data].concat(leftPreorder).concat(rightPreorder);
         }
 
+        if (this.root === null && typeof fn === undefined) return [];
+        if (this.root === null) return;
+
         const orderedElems: number[] = nodePreorder(this.root);
 
         if (typeof fn === "undefined") {
             return orderedElems;
         }
         orderedElems.forEach(fn);
-    },
+    };
 
     postorder(fn?: (n: number) => any): void | number[] {
         function nodePostorder(root: TreeNode): number[] {
@@ -164,32 +166,29 @@ const treePrototype = {
             return rightPostorder.concat(leftPostorder).concat([root.data]);
         }
 
+        if (this.root === null && typeof fn === undefined) return [];
+        if (this.root === null) return;
+
         const orderedElems: number[] = nodePostorder(this.root);
 
         if (typeof fn === "undefined") {
             return orderedElems;
         }
         orderedElems.forEach(fn);
-    },
+    };
 
     height(node: TreeNode): number {
         return 0;
-    },
+    };
 
     depth(node: TreeNode): number {
         return 0;
-    },
+    };
 }
 
-// Tree factory function.
-function createTree(data: number[]): Tree {
-    const tree: Tree = Object.create(treePrototype);
-    tree.root = buildTree(data);
-    return tree;
-}
 
 // Builds a bst from an array and returns the root node.
-function buildTree(data: number[]): TreeNode | null {
+function buildBalancedTree(data: number[]): TreeNode | null {
     if (data.length === 0) return null;
 
     data.sort((a, b) => a - b)
@@ -198,10 +197,10 @@ function buildTree(data: number[]): TreeNode | null {
     const leftData = data.slice(0, middleElem);
     const rightData = data.slice(middleElem + 1);
 
-    const leftTree = buildTree(leftData);
-    const rightTree = buildTree(rightData);
+    const leftTree = buildBalancedTree(leftData);
+    const rightTree = buildBalancedTree(rightData);
 
-    return createTreeNode(data[middleElem], leftTree, rightTree);
+    return new TreeNode(data[middleElem], leftTree, rightTree);
 }
 
 function prettyPrintFromTreeNode(node: TreeNode, prefix = "", isLeft = true): void {
@@ -224,7 +223,7 @@ for (let i = 0; i < 10; ++i) {
     randNums.push(Math.floor(Math.random() * 100));
 }
 
-const tree = createTree(randNums);
+const tree = new Tree(randNums);
 if (tree.root !== null) {
     prettyPrintFromTreeNode(tree.root);
     console.log(tree.levelOrder());
