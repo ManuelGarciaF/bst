@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.ts",
   "scripts": {
-    "dev": "tsc main.ts && node main.js"
+    "dev": "tsc && node src/main.js"
   },
   "keywords": [],
   "author": "",
