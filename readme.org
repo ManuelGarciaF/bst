@@ -1,5 +1,11 @@
 #+title: Odin Project - Binary Search Tree
 
-* Balanced Binary Search Tree implementation in typescript
+** Balanced Binary Search Tree implementation in typescript
 
 - Details [[https://www.theodinproject.com/lessons/javascript-binary-search-trees][here]]
+
+*** Running
+<#+begin_src sh
+$ npm run dev
+#+end_src
+Compiles and runs the script
