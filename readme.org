@@ -1,0 +1,4 @@
+#+title: Odin Project - Binary Search Tree
+#+subtitle: Balanced Binary Search Tree implementation in typescript
+
+- Details [[https://www.theodinproject.com/lessons/javascript-binary-search-trees][here]]
