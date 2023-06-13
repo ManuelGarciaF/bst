@@ -20,7 +20,10 @@ class Tree {
 
     // Tree factory function.
     constructor(data: number[]) {
-        this.root = buildBalancedTree(data);
+        // Sort and remove duplicates from data
+        const correctData = [...new Set(data.sort((a, b) => a - b))]
+
+        this.root = buildBalancedTree(correctData);
     }
 
     insert(elem: number): void {
@@ -190,8 +193,6 @@ class Tree {
 // Builds a bst from an array and returns the root node.
 function buildBalancedTree(data: number[]): TreeNode | null {
     if (data.length === 0) return null;
-
-    data.sort((a, b) => a - b)
 
     const middleElem: number = Math.floor(data.length / 2);
     const leftData = data.slice(0, middleElem);
