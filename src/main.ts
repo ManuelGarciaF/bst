@@ -1,6 +1,5 @@
 // BST Exercise for The Odin Project
 
-
 class TreeNode {
     data: number;
     left: TreeNode | null;
@@ -17,14 +16,38 @@ class TreeNode {
         if (this.left === null && this.right === null) return 0;
 
         // -1 to indicate that the node does not exist.
-        let leftHeight = (this.left !== null) ? this.left.height() : -1;
-        let rightHeight = (this.right !== null) ? this.right.height() : -1;
+        const leftHeight = (this.left !== null) ? this.left.height() : -1;
+        const rightHeight = (this.right !== null) ? this.right.height() : -1;
 
         return ((leftHeight > rightHeight) ? leftHeight : rightHeight) + 1;
     };
-}
 
-// TreeNode factory function.
+    isBalanced(): boolean {
+        // A node with no children is balanced.
+        if (this.left === null && this.right === null) return true;
+
+        // -1 to indicate that the node does not exist.
+        const leftHeight = (this.left !== null) ? this.left.height() : -1;
+        const rightHeight = (this.right !== null) ? this.right.height() : -1;
+
+        const leftBalanced = (this.left !== null) ? this.left.isBalanced() : true;
+        const rightBalanced = (this.right !== null) ? this.right.isBalanced() : true;
+
+        // The difference between the heights of the subtrees is 0 or 1, and the subtrees are,
+        // themselves ordered.
+        return (Math.abs(leftHeight - rightHeight) < 2) && leftBalanced && rightBalanced;
+    }
+
+    printSubTree(prefix = "", isLeft = true): void {
+        if (this.right !== null) {
+            this.right.printSubTree(`${prefix}${isLeft ? "│   " : "    "}`, false);
+        }
+        console.log(`${prefix}${isLeft ? "└── " : "┌── "}${this.data}`);
+        if (this.left !== null) {
+            this.left.printSubTree(`${prefix}${isLeft ? "    " : "│   "}`, true);
+        }
+    };
+}
 
 class Tree {
     root: TreeNode | null;
@@ -35,6 +58,11 @@ class Tree {
         const correctData = [...new Set(data.sort((a, b) => a - b))]
 
         this.root = buildBalancedTree(correctData);
+    }
+
+    print(): void {
+        if (this.root === null) return;
+        this.root.printSubTree();
     }
 
     insert(elem: number): void {
@@ -52,7 +80,7 @@ class Tree {
         prevNode[elem < prevNode.data ? "left" : "right"] = new TreeNode(elem, null, null);
     };
 
-    delete(elem: number) {
+    delete(elem: number): void {
         let elemNode = this.root;
         let fatherNode: TreeNode | null = null;
         while (elemNode !== null && elemNode.data !== elem) {
@@ -191,7 +219,6 @@ class Tree {
         orderedElems.forEach(fn);
     };
 
-
     depth(target: TreeNode): number {
         let count = 0;
         let currNode = this.root;
@@ -207,10 +234,25 @@ class Tree {
         // Not found
         return -1;
     };
+
+    isBalanced(): boolean {
+        if (this.root === null) return true;
+        return this.root.isBalanced();
+    };
+
+    rebalance(): void {
+        if (this.root === null) return;
+
+        // Inorder is already sorted, can use that to build a new ordered tree.
+        const ordered = this.inorder();
+        if (typeof ordered === "undefined") throw new Error("Unreachable");
+
+        this.root = buildBalancedTree(ordered);
+    };
+
 }
 
-
-// Builds a bst from an array and returns the root node.
+// Builds a balanced bst from an ordered array and returns the root node.
 function buildBalancedTree(data: number[]): TreeNode | null {
     if (data.length === 0) return null;
 
@@ -224,29 +266,30 @@ function buildBalancedTree(data: number[]): TreeNode | null {
     return new TreeNode(data[middleElem], leftTree, rightTree);
 }
 
-function prettyPrintFromTreeNode(node: TreeNode, prefix = "", isLeft = true): void {
-    if (node === null) {
-        return;
-    }
-    if (node.right !== null) {
-        prettyPrintFromTreeNode(node.right, `${prefix}${isLeft ? "│   " : "    "}`, false);
-    }
-    console.log(`${prefix}${isLeft ? "└── " : "┌── "}${node.data}`);
-    if (node.left !== null) {
-        prettyPrintFromTreeNode(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
-    }
-};
-
-// Tests
-
+// Test script
 const randNums: number[] = []
-for (let i = 0; i < 10; ++i) {
+for (let i = 0; i < 100; ++i) {
     randNums.push(Math.floor(Math.random() * 100));
 }
 
 const tree = new Tree(randNums);
-if (tree.root !== null) {
-    prettyPrintFromTreeNode(tree.root);
-    console.log(tree.levelOrder());
-    console.log(tree.inorder());
+
+console.log("Tree is balanced: ", tree.isBalanced());
+console.log("PreOrder: ", tree.preorder());
+console.log("InOrder: ", tree.inorder());
+console.log("PostOrder: ", tree.postorder());
+console.log("--------------------");
+
+const addedNums: number[] = [];
+for (let i = 0; i < 20; ++i) {
+    addedNums.push(Math.floor(Math.random() * 100));
 }
+addedNums.forEach(n => tree.insert(n));
+console.log("Added: ", addedNums);
+console.log("Tree is balanced: ", tree.isBalanced());
+console.log("Rebalancing tree");
+tree.rebalance();
+console.log("Tree is balanced: ", tree.isBalanced());
+console.log("PreOrder: ", tree.preorder());
+console.log("InOrder: ", tree.inorder());
+console.log("PostOrder: ", tree.postorder());
